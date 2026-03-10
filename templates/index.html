@@ -33,12 +33,11 @@
     overflow-x: hidden;
   }
 
-  /* Grid noise overlay */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: 
+    background-image:
       linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -49,12 +48,11 @@
   .container {
     position: relative;
     z-index: 1;
-    max-width: 900px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 16px;
   }
 
-  /* Header */
   header {
     display: flex;
     align-items: center;
@@ -66,11 +64,7 @@
     flex-wrap: wrap;
   }
 
-  .logo {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
+  .logo { display: flex; flex-direction: column; gap: 2px; }
 
   .logo-title {
     font-family: var(--font-mono);
@@ -89,7 +83,6 @@
     text-transform: uppercase;
   }
 
-  /* Status bar */
   .status-bar {
     display: flex;
     align-items: center;
@@ -107,8 +100,7 @@
   }
 
   .status-dot {
-    width: 7px;
-    height: 7px;
+    width: 7px; height: 7px;
     border-radius: 50%;
     background: var(--text-dim);
     flex-shrink: 0;
@@ -141,7 +133,6 @@
     border-radius: 2px;
   }
 
-  /* Refresh button */
   .btn-refresh {
     background: transparent;
     border: 1px solid var(--border);
@@ -162,16 +153,13 @@
     background: rgba(0,229,160,0.05);
   }
 
-  .btn-refresh:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* Filter bar */
   .filter-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 10px 14px;
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -201,9 +189,7 @@
     outline: none;
   }
 
-  .filter-input:focus {
-    border-color: var(--accent);
-  }
+  .filter-input:focus { border-color: var(--accent); }
 
   .filter-search {
     background: var(--bg3);
@@ -213,30 +199,38 @@
     font-size: 12px;
     padding: 4px 8px;
     border-radius: 2px;
-    width: 120px;
+    width: 110px;
     outline: none;
   }
 
-  .filter-search:focus {
-    border-color: var(--accent2);
+  .filter-search:focus { border-color: var(--accent2); }
+
+  .filter-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236e7681'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
   }
+
+  .filter-select:focus { border-color: var(--accent); }
 
   /* Table */
-  .table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: var(--font-mono);
-    font-size: 12px;
-  }
+  table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
 
-  thead tr {
-    border-bottom: 1px solid var(--border);
-  }
+  thead tr { border-bottom: 1px solid var(--border); }
 
   th {
     text-align: left;
@@ -252,78 +246,42 @@
   }
 
   th:hover { color: var(--accent); }
-
   th.sorted { color: var(--accent); }
-
-  th .sort-icon {
-    margin-left: 4px;
-    opacity: 0.5;
-  }
-
+  th .sort-icon { margin-left: 4px; opacity: 0.5; }
   th.sorted .sort-icon { opacity: 1; }
 
-  tbody tr {
-    border-bottom: 1px solid rgba(33,38,45,0.5);
-    transition: background 0.15s;
-  }
+  tbody tr { border-bottom: 1px solid rgba(33,38,45,0.5); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(0,229,160,0.04); }
 
-  tbody tr:hover {
-    background: rgba(0,229,160,0.04);
-  }
+  td { padding: 10px 10px; white-space: nowrap; }
 
-  td {
-    padding: 10px 10px;
-    white-space: nowrap;
-  }
+  .sym { color: var(--text-bright); font-weight: 600; font-size: 13px; letter-spacing: 0.05em; }
+  .price { color: var(--text); }
 
-  .sym {
-    color: var(--text-bright);
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.05em;
-  }
-
-  .price {
-    color: var(--text);
-  }
-
-  .dist-bar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .dist-val {
-    min-width: 44px;
-    text-align: right;
-  }
+  .dist-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .dist-val { min-width: 44px; text-align: right; }
 
   .dist-bar {
-    width: 60px;
-    height: 4px;
+    width: 60px; height: 4px;
     background: var(--bg3);
     border-radius: 2px;
     overflow: hidden;
     flex-shrink: 0;
   }
 
-  .dist-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.3s;
-  }
+  .dist-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
 
   .dist-close { color: var(--accent); }
   .dist-mid { color: var(--warn); }
   .dist-far { color: var(--text-dim); }
 
-  .band-width {
-    color: var(--text-dim);
-  }
-
+  .band-width { color: var(--text-dim); }
   .band-width.wide { color: var(--accent2); }
 
-  /* No data state */
+  .vol-cell { color: var(--text-dim); font-size: 11px; }
+  .vol-cell.high { color: var(--accent2); }
+  .vol-cell.mid { color: var(--text); }
+
   .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -332,13 +290,6 @@
     font-size: 12px;
   }
 
-  .empty-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-    opacity: 0.3;
-  }
-
-  /* Loading overlay */
   .scanning-overlay {
     text-align: center;
     padding: 40px;
@@ -348,17 +299,13 @@
     letter-spacing: 0.1em;
   }
 
-  .scanning-text {
-    color: var(--warn);
-    animation: blink 1s infinite;
-  }
+  .scanning-text { color: var(--warn); animation: blink 1s infinite; }
 
   @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.2; }
   }
 
-  /* Info footer */
   .info-footer {
     margin-top: 16px;
     padding: 10px 14px;
@@ -374,17 +321,20 @@
     line-height: 1.8;
   }
 
-  .info-item::before {
-    content: '▸ ';
-    color: var(--accent);
+  .info-item::before { content: '▸ '; color: var(--accent); }
+
+  .divider {
+    width: 1px;
+    height: 16px;
+    background: var(--border);
+    flex-shrink: 0;
   }
 
-  /* Mobile tweaks */
   @media (max-width: 600px) {
     .logo-title { font-size: 15px; }
     td, th { padding: 8px 6px; }
     .dist-bar { width: 40px; }
-    .filter-search { width: 90px; }
+    .filter-search { width: 80px; }
   }
 </style>
 </head>
@@ -407,10 +357,22 @@
   </header>
 
   <div class="filter-bar">
-    <span class="filter-label">篩選</span>
-    <span class="filter-label">最大距離%</span>
+    <span class="filter-label">距上軌上限%</span>
     <input class="filter-input" id="maxDist" type="number" value="5" min="0.1" max="100" step="0.1" onchange="renderTable()">
-    <span class="filter-label">搜尋幣種</span>
+
+    <div class="divider"></div>
+
+    <span class="filter-label">成交量篩選</span>
+    <select class="filter-select" id="volFilter" onchange="renderTable()">
+      <option value="0">無限制</option>
+      <option value="100000000">24h &gt; 1億 USDT</option>
+      <option value="50000000">24h &gt; 5000萬 USDT</option>
+      <option value="20000000">24h &gt; 2000萬 USDT</option>
+    </select>
+
+    <div class="divider"></div>
+
+    <span class="filter-label">搜尋</span>
     <input class="filter-search" id="searchInput" type="text" placeholder="BTC, ETH..." oninput="renderTable()">
   </div>
 
@@ -423,10 +385,11 @@
           <th onclick="sortBy('upper')">上軌 <span class="sort-icon">↕</span></th>
           <th onclick="sortBy('dist_to_upper_pct')" class="sorted">距上軌% <span class="sort-icon">↑</span></th>
           <th onclick="sortBy('band_width_pct')">帶寬% <span class="sort-icon">↕</span></th>
+          <th onclick="sortBy('volume_usdt')">24h量(USDT) <span class="sort-icon">↕</span></th>
         </tr>
       </thead>
       <tbody id="tableBody">
-        <tr><td colspan="5" class="scanning-overlay"><span class="scanning-text">SCANNING MARKETS...</span></td></tr>
+        <tr><td colspan="6" class="scanning-overlay"><span class="scanning-text">SCANNING MARKETS...</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -446,6 +409,19 @@ let sortKey = 'dist_to_upper_pct';
 let sortAsc = true;
 let autoRefreshTimer;
 
+function formatVol(v) {
+  if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+  if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+  return v.toFixed(0);
+}
+
+function getVolClass(v) {
+  if (v >= 100000000) return 'high';
+  if (v >= 20000000) return 'mid';
+  return '';
+}
+
 async function fetchData() {
   try {
     const res = await fetch('/api/data');
@@ -454,7 +430,6 @@ async function fetchData() {
 
     const dot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
-    const countBadge = document.getElementById('countBadge');
     const refreshBtn = document.getElementById('refreshBtn');
 
     if (json.is_scanning) {
@@ -468,8 +443,6 @@ async function fetchData() {
     }
 
     renderTable();
-
-    // filtered count updated in renderTable
   } catch(e) {
     console.error(e);
   }
@@ -490,15 +463,16 @@ function getDistClass(d) {
 
 function renderTable() {
   const maxDist = parseFloat(document.getElementById('maxDist').value) || 999;
+  const volMin = parseFloat(document.getElementById('volFilter').value) || 0;
   const search = document.getElementById('searchInput').value.trim().toUpperCase();
 
   let filtered = allData.filter(d => {
     if (d.dist_to_upper_pct > maxDist) return false;
+    if (volMin > 0 && d.volume_usdt < volMin) return false;
     if (search && !d.symbol.includes(search)) return false;
     return true;
   });
 
-  // Sort
   filtered.sort((a, b) => {
     let av = a[sortKey], bv = b[sortKey];
     if (typeof av === 'string') return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
@@ -510,12 +484,12 @@ function renderTable() {
   const tbody = document.getElementById('tableBody');
 
   if (allData.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="scanning-overlay"><span class="scanning-text">SCANNING MARKETS...</span></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="scanning-overlay"><span class="scanning-text">SCANNING MARKETS...</span></td></tr>`;
     return;
   }
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><div class="empty-icon">◎</div><div>無符合條件的幣種</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><div>◎</div><div style="margin-top:8px">無符合條件的幣種</div></td></tr>`;
     return;
   }
 
@@ -524,6 +498,7 @@ function renderTable() {
     const barPct = Math.min(100, (d.dist_to_upper_pct / 5) * 100);
     const barColor = d.dist_to_upper_pct <= 0.5 ? '#00e5a0' : d.dist_to_upper_pct <= 2 ? '#ff9500' : '#6e7681';
     const bwClass = d.band_width_pct >= 3 ? 'wide' : '';
+    const volClass = getVolClass(d.volume_usdt);
 
     return `<tr>
       <td class="sym">${d.symbol}</td>
@@ -536,6 +511,7 @@ function renderTable() {
         </div>
       </td>
       <td class="band-width ${bwClass}">${d.band_width_pct.toFixed(2)}%</td>
+      <td class="vol-cell ${volClass}">${formatVol(d.volume_usdt)}</td>
     </tr>`;
   }).join('');
 }
@@ -545,15 +521,14 @@ function sortBy(key) {
     sortAsc = !sortAsc;
   } else {
     sortKey = key;
-    sortAsc = true;
+    sortAsc = key === 'dist_to_upper_pct';
   }
-  // Update header styles
   document.querySelectorAll('th').forEach(th => {
     th.classList.remove('sorted');
     const icon = th.querySelector('.sort-icon');
     if (icon) icon.textContent = '↕';
   });
-  const headers = { symbol: 0, price: 1, upper: 2, dist_to_upper_pct: 3, band_width_pct: 4 };
+  const headers = { symbol: 0, price: 1, upper: 2, dist_to_upper_pct: 3, band_width_pct: 4, volume_usdt: 5 };
   const idx = headers[key];
   if (idx !== undefined) {
     const th = document.querySelectorAll('th')[idx];
@@ -571,7 +546,6 @@ async function manualRefresh() {
   setTimeout(fetchData, 500);
 }
 
-// Auto refresh every 15s (to catch scan completion)
 function startAutoRefresh() {
   clearInterval(autoRefreshTimer);
   autoRefreshTimer = setInterval(fetchData, 15000);
