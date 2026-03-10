@@ -14,7 +14,8 @@ BINANCE_BASE = "https://fapi.binance.com"
 cache = {
     "data": [],
     "last_updated": None,
-    "is_scanning": False
+    "is_scanning": False,
+    "volume_data": {}  # symbol -> 24h quote volume
 }
 
 async def fetch_json(session, url, params=None):
@@ -25,7 +26,6 @@ async def fetch_json(session, url, params=None):
         return None
 
 async def get_all_symbols(session):
-    """Get all USDT perpetual futures symbols"""
     data = await fetch_json(session, f"{BINANCE_BASE}/fapi/v1/exchangeInfo")
     if not data:
         return []
@@ -35,26 +35,28 @@ async def get_all_symbols(session):
     ]
     return symbols
 
-async def get_funding_intervals(session, symbols):
-    """Get funding rate interval for each symbol, return set of symbols with 1h interval"""
-    # Use premiumIndex to get funding info
-    data = await fetch_json(session, f"{BINANCE_BASE}/fapi/v1/premiumIndex")
-    if not data:
-        return set()
-    
-    # Get funding rate settle speed info via exchangeInfo
+async def get_funding_intervals(session):
     exinfo = await fetch_json(session, f"{BINANCE_BASE}/fapi/v1/exchangeInfo")
     hourly_symbols = set()
     if exinfo:
         for s in exinfo.get("symbols", []):
-            # liquidationFee or fundingIntervalHours
             interval = s.get("fundingIntervalHours", 8)
             if interval == 1:
                 hourly_symbols.add(s["symbol"])
     return hourly_symbols
 
+async def get_24h_volumes(session):
+    """Get 24h quote volume for all symbols"""
+    data = await fetch_json(session, f"{BINANCE_BASE}/fapi/v1/ticker/24hr")
+    volumes = {}
+    if data:
+        for item in data:
+            sym = item.get("symbol", "")
+            vol = float(item.get("quoteVolume", 0))
+            volumes[sym] = vol
+    return volumes
+
 async def get_klines(session, symbol):
-    """Get last 25 15m klines"""
     data = await fetch_json(session, f"{BINANCE_BASE}/fapi/v1/klines", {
         "symbol": symbol,
         "interval": "15m",
@@ -63,22 +65,16 @@ async def get_klines(session, symbol):
     return data
 
 def calc_bollinger(klines, period=20, std_mult=2.0):
-    """Calculate Bollinger Bands from klines"""
     if not klines or len(klines) < period:
         return None
-    
     closes = [float(k[4]) for k in klines]
-    
-    # Use last `period` closes
     window = closes[-period:]
     mean = sum(window) / period
     variance = sum((x - mean) ** 2 for x in window) / period
     std = math.sqrt(variance)
-    
     upper = mean + std_mult * std
     lower = mean - std_mult * std
     current_price = closes[-1]
-    
     return {
         "price": current_price,
         "upper": upper,
@@ -87,32 +83,22 @@ def calc_bollinger(klines, period=20, std_mult=2.0):
         "std": std
     }
 
-async def scan_symbol(session, symbol):
-    """Scan a single symbol"""
+async def scan_symbol(session, symbol, volume_usdt):
     klines = await get_klines(session, symbol)
     if not klines:
         return None
-    
     bb = calc_bollinger(klines)
     if not bb:
         return None
-    
     price = bb["price"]
     upper = bb["upper"]
     middle = bb["middle"]
-    
-    # Filter: price must be below upper band
     if price >= upper:
         return None
-    
-    # Filter: upper - middle distance must be >= 1%
     band_width_pct = (upper - middle) / middle * 100
     if band_width_pct < 1.0:
         return None
-    
-    # Distance from price to upper band
     dist_to_upper_pct = (upper - price) / upper * 100
-    
     return {
         "symbol": symbol.replace("USDT", ""),
         "full_symbol": symbol,
@@ -122,38 +108,36 @@ async def scan_symbol(session, symbol):
         "lower": bb["lower"],
         "dist_to_upper_pct": dist_to_upper_pct,
         "band_width_pct": band_width_pct,
+        "volume_usdt": volume_usdt
     }
 
 async def run_scan():
     cache["is_scanning"] = True
     results = []
-    
+
     async with aiohttp.ClientSession() as session:
         symbols = await get_all_symbols(session)
         if not symbols:
             cache["is_scanning"] = False
             return
-        
-        # Get hourly funding symbols to exclude
-        hourly_symbols = await get_funding_intervals(session, symbols)
-        
-        # Filter out hourly funding symbols
+
+        hourly_symbols = await get_funding_intervals(session)
+        volumes = await get_24h_volumes(session)
+        cache["volume_data"] = volumes
+
         symbols = [s for s in symbols if s not in hourly_symbols]
-        
-        # Scan in batches to avoid rate limits
+
         batch_size = 20
         for i in range(0, len(symbols), batch_size):
             batch = symbols[i:i+batch_size]
-            tasks = [scan_symbol(session, sym) for sym in batch]
+            tasks = [scan_symbol(session, sym, volumes.get(sym, 0)) for sym in batch]
             batch_results = await asyncio.gather(*tasks)
             for r in batch_results:
                 if r:
                     results.append(r)
-            await asyncio.sleep(0.15)  # rate limit protection
-    
-    # Sort by distance to upper band (closest first)
+            await asyncio.sleep(0.15)
+
     results.sort(key=lambda x: x["dist_to_upper_pct"])
-    
     cache["data"] = results
     cache["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cache["is_scanning"] = False
@@ -170,7 +154,7 @@ def background_scanner():
     while True:
         if not cache["is_scanning"]:
             run_scan_sync()
-        time.sleep(60)  # scan every 60 seconds
+        time.sleep(60)
 
 @app.route("/")
 def index():
@@ -194,9 +178,7 @@ def api_refresh():
     return jsonify({"status": "started"})
 
 if __name__ == "__main__":
-    # Start background scanner
     scanner_thread = threading.Thread(target=background_scanner)
     scanner_thread.daemon = True
     scanner_thread.start()
-    
     app.run(host="0.0.0.0", port=5000, debug=False)
